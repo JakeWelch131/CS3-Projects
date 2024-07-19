@@ -1,0 +1,69 @@
+#include "listTemplate.hpp"
+
+template <typename T>
+void Collection<T>::add(const T& item) {
+    if (beginning_ == 0) {
+        beginning_ = new node<T>(item);
+        ending_ = beginning_;
+    }
+    else {
+        node<T> *temp = new node<T>(item);
+        ending_->setNext(temp);
+        ending_ = ending_->getNext();
+    }
+}
+
+template <typename T>
+void Collection<T>::print() {
+    node<T> *temp = beginning_;
+    while (temp != 0) {
+        std::cout << temp->getData() << std::endl;
+        temp = temp->getNext();
+    }
+    
+}
+
+template <typename T>
+void Collection<T>::remove(const T& item) {
+    node<T> *finder = beginning_;
+    while (finder != 0) {
+        node<T> *rightSide = finder->getNext();
+        if (rightSide->getData() == item) {
+            if (rightSide->getNext() == 0) {
+                ending_ = finder;
+                delete rightSide;
+                finder->setNext(0);
+                return;
+            }
+            else {
+                finder->setNext(rightSide->getNext());
+                delete rightSide;
+                finder = finder->getNext();
+            }
+        }
+        else {
+            finder = finder->getNext();
+        }
+    }
+}
+
+template <typename T>
+T Collection<T>::last() {
+    return ending_->getData();
+}
+
+template <typename T>
+bool equal(const Collection<T> &col1, const Collection<T> &col2) {
+    node<T> *temp1 = col1.beginning_;
+    node<T> *temp2 = col2.beginning_;
+    while((temp1 != 0) && (temp2 != 0)) {
+        if(temp1->getData() != temp2->getData()) {
+            return false;
+        }
+        else {
+            temp1 = temp1->getNext();
+            temp2 = temp2->getNext();
+        }
+    }
+    return true;
+}

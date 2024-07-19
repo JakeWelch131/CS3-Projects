@@ -1,0 +1,211 @@
+// vector and list algorithms
+// Jacob Welch
+// 2/9/2024
+
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <list>
+#include <string>
+#include <cstdlib>
+#include <algorithm>
+
+using std::ifstream;
+using std::string; using std::getline;
+using std::list; using std::vector;
+using std::cout; using std::endl;
+using std::move;
+
+// reading a list from a fileName
+void readRoster(list<string>& roster, string fileName);  
+
+// printing a list out
+void printRoster(const list<string>& roster); 
+
+std::string SubstringAfterColon(const std::string& input);
+
+int main(int argc, char* argv[]){
+
+   if (argc <= 1){ 
+      cout << "usage: " << argv[0] 
+      << " list of courses, dropouts last" 
+      << endl;
+      exit(1);
+   }
+
+   // vector of courses of students
+   vector <list<string>> courseStudents; 
+
+   for(int i=1; i < argc-1; ++i){
+      list<string> roster;
+      readRoster(roster, argv[i]);  
+      //cout << "\n\n" << argv[i] << "\n";  
+      //printRoster(roster);
+      courseStudents.push_back(move(roster));
+   }
+
+/*for (size_t i = 0; i < courseStudents.size(); ++i) {
+        
+        list<string> course = courseStudents[i];
+        cout << "cs" << i + 1 << ".txt" << endl;
+        for(const auto& student : course) {
+            cout << student << endl;
+        }
+        }*/
+    
+  
+   // reading in dropouts
+   list<string> dropouts; 
+   readRoster(dropouts, argv[argc-1]); 
+   //cout << "\n\n dropouts \n";
+   //printRoster(dropouts);
+
+
+   // master list of students
+   std::list<std::string> allStudents;
+
+/*std::cout << "Size of lists in courseStudents before move:\n";
+    for (const auto& lst : courseStudents) {
+        std::cout << lst.size() << '\n';
+    }*/
+
+    // Move elements from courseStudents to allStudents without leaving courseStudents empty
+    for (const auto& lst : courseStudents) {
+        allStudents.insert(allStudents.end(), lst.begin(), lst.end());
+    }
+/*
+    std::cout << "Size of lists in courseStudents after move:\n";
+    for (const auto& lst : courseStudents) {
+        std::cout << lst.size() << '\n';
+    }
+
+    std::cout << "courseStudents contains:\n";
+    for (const auto& lst : courseStudents) {
+        for (const auto& student : lst) {
+            std::cout << student << '\n';
+        }
+    }*/
+
+    // Print courseStudents to verify its contents
+    
+   //cout << "\n\n all students unsorted \n"; 
+           //printRoster(allStudents);
+
+   
+   // sorting master list
+   allStudents.sort();
+   //cout << "\n\n all students sorted \n"; 
+   //printRoster(allStudents);
+
+   
+   // eliminating duplicates
+   allStudents.unique(); 
+   //cout << "\n\n all students, duplicates removed \n"; 
+   //printRoster(allStudents);
+
+   // removing individual dropouts
+   for (const auto& str : dropouts)  
+      allStudents.remove(str);
+
+   //cout << "\n\n all students, dropouts removed \n"; 
+   //printRoster(allStudents);
+
+   std::list<std::string> finalList;
+
+   
+    for (auto it = allStudents.begin(); it != allStudents.end(); ++it) {
+        std::string studentName = (*it).substr(0, (*it).find(':'));
+        //cout << studentName << endl;
+
+        for (size_t i = 0; i < courseStudents.size(); ++i) {
+            list<string>& course = courseStudents[i];
+            
+            // Iterate over each string in the 'course' list
+            for (auto course_it = course.begin(); course_it != course.end(); ++course_it) {
+                // Compare the value pointed to by 'it' with each string in 'course'
+                std::string studentInCourse = course_it->substr(0, course_it->find(':'));
+                //cout << studentInCourse << endl;
+                if (studentName == studentInCourse) {
+                    //cout << "a name has been found" << endl;
+                        switch(i) {
+                                case 0:
+                                    //cout << " found new element in cs1" << endl;
+                                    finalList.push_back(*it + "cs1 ");
+                                    //cout << *it << endl;
+                                    break;
+                                case 1: 
+                                    //cout << " found new element in cs2" << endl;
+                                    finalList.push_back(*it + "cs2 ");
+                                    //cout << *it << endl;
+                                    break;
+                                case 2:
+                                    //cout << " found new element in cs3" << endl;
+                                    finalList.push_back(*it + "cs3 ");
+                                    //cout << *it << endl;
+                                    break;
+                                case 3:
+                                    //cout << " found new element in cs4" << endl;
+                                    finalList.push_back(*it + "cs4 ");
+                                    //cout << *it << endl;
+                                    break;
+                                default:
+                                    cout << "something is wrong" << endl;
+                        }
+                    break; // Break the loop after finding the value
+                }
+
+                
+                    
+                else {
+                    //cout << "no match :(" << endl;
+                }
+            }
+            //cout << "next course" << endl;
+        }
+    }
+
+    std::list<std::string> resultList;
+    for (auto it = allStudents.begin(); it != allStudents.end(); ++it) {
+        //cout << *it << endl;
+        string courses = "";
+        for (auto finalIt = finalList.begin(); finalIt != finalList.end(); ++finalIt) {
+            std::string studentInList = finalIt->substr(0, finalIt->find(':') + 1);
+            //cout << studentInList << endl;
+            if (*it == studentInList) {
+                //cout << "we have a match" << endl;
+                courses += SubstringAfterColon(*finalIt);
+            }
+        }
+        resultList.push_back(*it + courses);
+    }
+    cout << "result list with courses" << endl;
+    printRoster(resultList);
+}
+    
+
+
+// reading in a file of *its into a list of strings
+void readRoster(list<string>& roster, string fileName){
+   ifstream course(fileName);
+   string first, last;
+   while(course >> first >> last) {
+      roster.push_back(first + ' ' + last + ":");
+   }
+   course.close();
+}
+
+// printing a list out
+void printRoster(const list<string>& roster){
+   for(const auto& str : roster)
+      cout << str << endl;
+}
+
+std::string SubstringAfterColon(const std::string& input) {
+    size_t colonPos = input.find(':');
+    
+    if (colonPos != std::string::npos) {
+        return input.substr(colonPos + 1);
+    } else {
+        return "";
+    }
+}

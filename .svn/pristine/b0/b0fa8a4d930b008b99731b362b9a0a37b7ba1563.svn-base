@@ -1,0 +1,58 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+int compareStrings(std::string, std::string);
+std::string spaceString(int, int);
+
+int main(int argc, char *argv[]) {
+
+    if (argc == 3) {
+        std::ifstream file1(argv[1]);
+        std::ifstream file2(argv[2]);
+        std::string string1 = "";
+        std::string string2 = "";
+        int lineNumber = 0;
+        while(std::getline(file1, string1) && std::getline(file2, string2)) {
+           lineNumber++;
+
+            if (string1 == string2) {
+                continue;
+            }
+            else {
+                int charPosition = compareStrings(string1, string2);
+                std::string result = spaceString(charPosition, lineNumber);
+                std::cout << argv[1] << ": " << lineNumber << ": " << string1 << std::endl;
+                std::cout << argv[2] << ": " << lineNumber << ": "  << string2 << std::endl;
+                std::cout << result << std::endl;
+            }
+        }
+    }
+    else {
+        std::cerr << "Error: incorrect number of files entered on command line";
+        exit(1);
+    }
+
+}
+
+int compareStrings(std::string string1, std::string string2) {
+    int counter = 0;
+    while(counter != string1.length() || counter != string2.length()) {
+        char char1 = string1[counter];
+        char char2 = string2[counter];
+        if (char1 != char2) {
+            return counter;
+        }
+        ++counter;
+    }
+}
+
+std::string spaceString(int numOfSpaces, int lineNumberDigits) {
+    std::string numberToString = std::to_string(lineNumberDigits);
+    int digits = numberToString.size();
+    std::string result = "             ";
+    for (int i = 0; i < numOfSpaces + digits; ++i) {
+        result += " ";
+    }
+    return result + "^";
+}

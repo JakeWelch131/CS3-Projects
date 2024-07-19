@@ -1,0 +1,110 @@
+#include "WordList.hpp"
+
+// ========================= WordOccurence Class implementation==========================
+
+WordOccurrence::WordOccurrence() {
+    word_= "";
+    num_= 0;
+}
+
+WordOccurrence::WordOccurrence(const string& word, int num) {
+    word_ = word;
+    num_ = num;
+}
+
+bool WordOccurrence::matchWord(const string& readString) {
+    if (word_ == readString) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+void WordOccurrence::increment() {
+    ++num_;
+}
+
+string WordOccurrence::getWord() const {
+    return word_;
+}
+
+int WordOccurrence::getNum() const {
+    return num_;
+}
+
+// ========================= WordList Class implementation ==============================
+
+// Copy Ctor
+WordList::WordList(const WordList& copy) {
+    size_ = copy.size_;
+    wordArray_ = new WordOccurrence[size_];
+    for (int i = 0; i < size_; ++i) {
+        wordArray_[i] = copy.wordArray_[i];
+    }
+}
+
+// Dtor
+WordList::~WordList() {
+    delete[] wordArray_;
+}
+
+// Swap idiom
+void WordList::swap(WordList& rhs) {
+    WordOccurrence *temp = wordArray_;
+    wordArray_ = rhs.wordArray_;
+    rhs.wordArray_ = temp;
+    int sizeTemp = size_;
+    size_ = rhs.size_;
+    rhs.size_ = sizeTemp;
+}
+
+// Assignment Overload
+WordList& WordList::operator=(WordList rhs) {
+    swap(rhs);
+    return *this;
+}
+
+bool equal(const WordList& lhs, const WordList& rhs) {
+    if (lhs.size_ != rhs.size_) {
+        return false;
+    }
+    for (int i = 0; i < lhs.size_; ++i) {
+        if (lhs.wordArray_[i].getWord() != rhs.wordArray_[i].getWord() || 
+            lhs.wordArray_[i].getNum() != rhs.wordArray_[i].getNum()) 
+            {
+                return false;
+            }
+            else {
+                return true;
+            }
+    }
+}
+
+void WordList::addWord(const string& newWord) {
+    int i = 0;
+    bool found = false;
+
+    while (i != size_) {
+        if (wordArray_[i].getWord() == newWord) {
+            wordArray_[i].increment();
+            found = true;
+            break;
+        }
+        else {
+            ++i;
+        }
+    }
+    if (found = false) {
+        WordOccurrence *newArray = new WordOccurrence[size_ + 1];
+        for (int i = 0; i < size_; ++i) {
+            newArray[i] = wordArray_[i];
+        }
+        newArray[i + 1] = WordOccurrence(newWord, 1);
+        wordArray_ = newArray;
+    }
+}
+
+void WordList::print() {
+    
+}

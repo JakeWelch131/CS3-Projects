@@ -1,0 +1,29 @@
+#include "listTemplate.hpp"
+
+template <typename T>
+void Collection<T>::add(const T& item) {
+    if (beginning_ == 0) {
+        beginning_ = new node<T>(item);
+        ending_ = beginning_;
+    }
+    else {
+        node<T> *temp = new node<T>(item);
+        ending_->setNext(temp);
+        ending_ = ending_->getNext();
+    }
+}
+
+template <typename T>
+void Collection<T>::print() {
+    node<T> *temp = beginning_;
+    while (temp != 0) {
+        std::cout << temp->getData() << std::endl;
+        temp = temp->getNext();
+    }
+    
+}
+
+template <typename T>
+T Collection<T>::last() {
+    return ending_->getData();
+}

@@ -1,0 +1,60 @@
+#include "WordList.hpp"
+
+// ========================= WordOccurence Class implementation==========================
+bool WordOccurrence::matchWord(const string& readString) {
+    if (word_ == readString) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+void WordOccurrence::increment() {
+    ++num_;
+}
+
+string WordOccurrence::getWord() const {
+    return word_;
+}
+
+int WordOccurrence::getNum() const {
+    return num_;
+}
+
+// ========================= WordList Class implementation ==============================
+
+// Default Ctor
+WordList::WordList() {
+    
+}
+
+// Copy Ctor
+WordList::WordList(const WordList& copy) {
+    size_ = copy.size_;
+    wordArray_ = new WordOccurrence[size_];
+    for (int i = 0; i < size_; ++i) {
+        wordArray_[i] = copy.wordArray_[i];
+    }
+}
+
+// Dtor
+WordList::~WordList() {
+    delete[] wordArray_;
+}
+
+// Swap idiom
+void WordList::swap(WordList& rhs) {
+    WordOccurrence *temp = wordArray_;
+    wordArray_ = rhs.wordArray_;
+    rhs.wordArray_ = temp;
+    int sizeTemp = size_;
+    size_ = rhs.size_;
+    rhs.size_ = sizeTemp;
+}
+
+// Assignment Overload
+WordList& WordList::operator=(WordList rhs) {
+    swap(rhs);
+    return *this;
+}
